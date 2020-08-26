@@ -8,6 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
+import java.time.LocalTime;
 
 public class Program implements Serializable {
     private static final long serialVersionUID = 0; 
@@ -45,7 +46,6 @@ public class Program implements Serializable {
     public Schedule getSchedule() {
         return schedule; 
     }
-
     
     public void setDirectory(String directory) {
         this.directory = directory; 
@@ -66,9 +66,13 @@ public class Program implements Serializable {
 
         Program oProgram = (Program) other; 
         
-        return name == oProgram.name && 
-        directory == oProgram.directory &&
-        schedule == oProgram.schedule; 
+        return name.equals(oProgram.name) && 
+        directory.equals(oProgram.directory) &&
+        schedule.equals(oProgram.schedule); 
+    }
+
+    public String toString() {
+        return name + " " + directory + " " + schedule.toString(); 
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {

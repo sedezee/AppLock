@@ -106,6 +106,7 @@ public class UIRegister {
 
     // launches the user interface. 
     public void run() {
+        System.out.println("RUNNING."); 
         String options = "Your options are: ";
         for(UIObject uiMethod : uiObjList) {
             options += uiMethod.getName(); 
@@ -119,16 +120,14 @@ public class UIRegister {
         while (true) {
             System.out.println("What would you like to do?"); 
             String methodName = scanner.nextLine(); 
-            if(methodName.toUpperCase().equals("EXIT")) {
+            if(methodName.equalsIgnoreCase("EXIT")) {
                  scanner.close(); 
                  break; 
-            } else if (methodName.toUpperCase().equals("HELP")) {
+            } else if (methodName.equalsIgnoreCase("HELP")) {
                 this.help(options); 
-            }else if(!this.runMethod(methodName)) {
+            } else if(!this.runMethod(methodName)) {
                 System.out.println("Sorry, " + methodName + " is not a valid choice."); 
             }
-
-            
         }
     }
 

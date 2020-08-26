@@ -31,6 +31,9 @@ public class Schedule implements Serializable {
     }
 
     public void setWeekdays(Pair<LocalTime, LocalTime>[] schedule) {
+        for (Pair<LocalTime, LocalTime> pair : schedule) {
+            System.out.println(pair); 
+        }
         monday = schedule; 
         tuesday = schedule; 
         wednesday = schedule; 
@@ -45,6 +48,10 @@ public class Schedule implements Serializable {
     }
 
     public void setDay(String day, Pair<LocalTime, LocalTime>[] schedule) {
+        System.out.println(day); 
+        for (Pair<LocalTime, LocalTime> pair : schedule) {
+            System.out.println(pair); 
+        }
         switch (day.toUpperCase()) {
             case "MONDAY": 
                 monday = schedule; 
@@ -69,6 +76,72 @@ public class Schedule implements Serializable {
                 break; 
             default: 
                 break; 
+        }
+    }
+
+    public Pair<LocalTime, LocalTime>[] getDay(String day) {
+        switch (day.toUpperCase()) {
+            case "MONDAY": 
+                return monday; 
+            case "TUESDAY": 
+                return tuesday;  
+            case "WEDNESDAY": 
+                return wednesday; 
+            case "THURSDAY": 
+                return thursday; 
+            case "FRIDAY": 
+                return friday; 
+            case "SATURDAY": 
+                return saturday; 
+            case "SUNDAY": 
+                return sunday; 
+            default: 
+                return null; 
+        }
+    }
+
+    private boolean checkTime(Pair[] arr, LocalTime localTime) {
+        for (Pair<LocalTime, LocalTime> pair : arr) {
+            LocalTime start = pair.left().isBefore(pair.right()) ? pair.left() : pair.right(); 
+            LocalTime end = pair.right().isAfter(pair.left()) ? pair.right() : pair.left(); 
+
+            if ((localTime.isAfter(start) && localTime.isBefore(end)) || localTime.equals(start) || localTime.equals(end)) {
+                return true; 
+            }
+        } 
+        return false; 
+    }
+
+    public static LocalTime parseTime(String time) {
+        String[] timeArr = time.split(":");
+        int hour = Integer.parseInt(timeArr[0]);
+        hour = hour == 12 ? 0 : hour; 
+        int minute = timeArr[1].length() == 4 ? Integer.parseInt(timeArr[1].substring(0, 2)) : Integer.parseInt(timeArr[1]); 
+        if (timeArr.length >= 4 && timeArr[1].substring(2, 4).equalsIgnoreCase("PM")) {
+            hour += 12;
+        }
+
+        return LocalTime.of(hour, minute);
+    }
+
+    public boolean inTime(String day, LocalTime localTime) {
+        switch (day.toUpperCase()) {
+            case "MONDAY": 
+                return checkTime(monday, localTime); 
+            case "TUESDAY": 
+                return checkTime(tuesday, localTime);  
+            case "WEDNESDAY": 
+                return checkTime(wednesday, localTime); 
+            case "THURSDAY": 
+              return checkTime(thursday, localTime); 
+            case "FRIDAY": 
+                return checkTime(friday, localTime); 
+            case "SATURDAY": 
+                return checkTime(saturday, localTime); 
+            case "SUNDAY": 
+                return checkTime(sunday, localTime); 
+            default: 
+                return false; 
         }
     }
 

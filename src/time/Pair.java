@@ -40,7 +40,7 @@ public class Pair<L, R> implements Serializable {
     }
 
     public String toString() {
-        return "<" + left.toString() + ", " + right.toString() + ">"; 
+        return "<" + left() + ", " + right.toString() + ">"; 
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {
