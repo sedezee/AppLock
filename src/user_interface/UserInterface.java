@@ -136,7 +136,7 @@ public class UserInterface {
             } else if (resp.equalsIgnoreCase("SELECT")) {
                 Optional<String> programStr = this.selectProgram(); 
                 try {
-                    File file = new File(programStr.get
+                    File file = new File(programStr.get()); 
                     Program program = new Program(file, configSchedule(scanner, 0)); 
                     dataManager.addProgram(program); 
                     System.out.println("Program added!"); 
