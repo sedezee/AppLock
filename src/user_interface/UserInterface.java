@@ -24,7 +24,6 @@ public class UserInterface {
 
     public UserInterface() {
         register = new UIRegister();  
-        this.setUp(new Scanner(System.in));    
     }
 
     private Optional<String> selectProgram() {
@@ -87,7 +86,7 @@ public class UserInterface {
         return schedule;
     }
 
-    private void setUp(Scanner scanner) {
+    public DataManager setUp(Scanner scanner) {
         while (true) {
             System.out.println("The default directory is" + System.getProperty("user.home")
                     + "\\Documents\\AppLock. Would you like to change this? YES or NO.");
@@ -100,19 +99,18 @@ public class UserInterface {
                     System.out.println("Directory does not exist. Using default directory.");
                 } else {
                     System.out.println("Directory set.");
-                    dataManager = new DataManager(f);
-                    break;
+                    return dataManager = new DataManager(f);
                 }
             }
 
             if (resp.equalsIgnoreCase("YES") || resp.equalsIgnoreCase("NO")) {
-                dataManager = new DataManager();
-                break;
+                return dataManager = new DataManager();
             }
         }
     }
 
     private void addProgram(Scanner scanner) {
+        //TODO add safety check
         while (true) {
             System.out.println("INPUT file location or SELECT file location?");
             String resp = scanner.nextLine();
@@ -145,6 +143,17 @@ public class UserInterface {
                     System.out.println("Program not found."); 
                 } 
             }
+        }
+    }
+
+    private void viewPrograms(Scanner scanner) {
+        List<Program> programs = dataManager.getPrograms(); 
+        if (programs.isEmpty()) {
+            System.out.println("No programs."); 
+        }
+
+        for (Program program : programs) {
+            System.out.println(program); 
         }
     }
 
@@ -193,10 +202,30 @@ public class UserInterface {
         }
     }
 
+    private void save(Scanner scanner) {
+        if (dataManager.save()) {
+            System.out.println("Sucessfully saved.");
+            return; 
+        }
+        System.out.println("Save unsuccessful."); 
+    }
+
+    private void editSettings(Scanner scanner) {
+        //TODO
+    }
+
+    private void viewSettings(Scanner scanner) {
+        //TODO
+    }
+
     public void run() {
         register.register(this::addProgram, "add program", "Adds a program to the restricted list.");
         register.register(this::deleteProgram, "delete program", "Deletes a program from the resitricted list."); 
+        register.register(this::viewPrograms, "view programs", "View the programs you have added.");
         register.register(this::editSchedule, "edit schedule", "Allows you to edit components of your schedule.");  
+        register.register(this::save, "save", "save your schedule and your settings."); 
+        register.register(this::editSettings, "edit settings", "Edit your settings."); 
+        register.register(this::viewSettings, "view settings", "View your settings."); 
         register.run(); 
     }
 }

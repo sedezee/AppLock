@@ -135,25 +135,17 @@ public class DataManager implements Serializable {
         settings = new Settings("12hr", true); 
     }
 
-    public void addProgram(Program program) {
-        try {
-            programs.add(program); 
-        } catch (NullPointerException e) {
-            logger.log(Level.INFO, e.toString()); 
-            programs = new ArrayList<>(); 
-            programs.add(program); 
-        }
-    }
-
     public List<Program> getPrograms() {
         return programs; 
     }
     
     public List<Program> getProgramsByViableTime(String day, LocalTime localTime) {
         List<Program> viablePrograms = new ArrayList<>(); 
-        for (Program program : programs) {
-            if (program.getSchedule().inTime(day, localTime))
-                viablePrograms.add(program); 
+        synchronized(programs) {
+            for (Program program : programs) {
+                if (program.getSchedule().inTime(day, localTime))
+                    viablePrograms.add(program); 
+            }
         }
 
         return viablePrograms; 
@@ -168,14 +160,29 @@ public class DataManager implements Serializable {
         return null; 
     }
 
+    public void addProgram(Program program) {
+        synchronized(programs) {
+            try {
+                programs.add(program); 
+            } catch (NullPointerException e) {
+                logger.log(Level.INFO, e.toString()); 
+                programs = new ArrayList<>(); 
+                programs.add(program); 
+            }
+        }
+
+    }
+
     public void deleteProgram(String name) {
-        for (int i = 0; i < programs.size(); i++) {
-            if (programs.get(i).getName().equals(name)) {
-                programs.remove(i); 
+        synchronized(programs) {
+            for (int i = 0; i < programs.size(); i++) {
+                if (programs.get(i).getName().equals(name)) {
+                    programs.remove(i); 
+                }
             }
         }
     }
-
+    
     public void writeSettings(String clock, boolean safety) {
         settings.clock = clock; 
         settings.safety = safety; 

@@ -1,50 +1,45 @@
 package src;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Scanner;
 
-import src.program_manager.ProcessHandler;
 import src.program_manager.ProcessInterface;
-import src.program_manager.ProcessListener;
 import src.program_manager.ProcessResponder;
-import src.time.Pair;
-import src.time.Program;
-import src.time.Schedule;
 import src.user_interface.UserInterface;
 
 public class Main {
     
-    public static void main(String... args) throws IOException, ClassNotFoundException {
+    public static void main(String... args) {
       
-        //TESTING CODE FOR KILLER
-        // Pair<LocalTime, LocalTime> pair = new Pair(LocalTime.of(1, 30), LocalTime.of(2, 40)); 
-        // Pair<LocalTime, LocalTime> pair2 = new Pair(LocalTime.of(22, 30), LocalTime.of(23, 20)); 
-        // Schedule schedule = new Schedule(); 
-        // schedule.setAllDays(new Pair[] {pair, pair2}); 
-        // File file = new File("C:\\Program Files\\Epic Games\\Celeste\\Celeste.exe"); 
-        // Program program = new Program(file, schedule);
-        // dataManager.delete(); 
-        // dataManager.load(); 
-        // dataManager.addProgram(program); 
-        // int i = 0; 
-        // String[] processNames = processHandler.getAllProcessNames(); 
-        // while(true) {
-        //     i++; 
-        //     if (i == 25) {
-        //         processInterface.checkProcess();
-        //     }
-        // }
-
+       
+                    
         UserInterface ui = new UserInterface(); 
-        ui.run(); 
+        DataManager dataManager = ui.setUp(new Scanner(System.in)); 
+
+        Thread uiThread = new Thread() {
+            @Override
+            public void run() {
+                ui.run(); 
+            }
+        };
+
+        Thread processThread = new Thread() {
+            @Override
+            public void run() {
+                ProcessInterface processInterface = new ProcessInterface();
+                processInterface.addListener(new ProcessResponder(dataManager));
+                int i = 0; 
+                while (true) {
+                    i++; 
+                    if (i == 25) {
+                        processInterface.checkProcess();
+                        i = 0; 
+                    }
+                }
+            }
+        };
+    
+        uiThread.start(); 
+        processThread.start(); 
 
     }
     

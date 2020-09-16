@@ -60,7 +60,7 @@ public class Program implements Serializable {
         return prime + name.hashCode() * directory.hashCode() * schedule.hashCode(); 
     }
 
-    public boolean equals(Object other) {
+    public boolean equals(Object other) { 
         if (!(other instanceof Program))
             return false; 
 

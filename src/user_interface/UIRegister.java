@@ -97,7 +97,7 @@ public class UIRegister {
             }
 
             try {
-                System.out.println(this.getMethod(choice).toString()); 
+                System.out.println(this.getMethod(choice)); 
             } catch(NullPointerException e) {
                 System.out.println("Sorry, that command doesn't exist."); 
             }

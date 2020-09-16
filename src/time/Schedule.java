@@ -117,7 +117,7 @@ public class Schedule implements Serializable {
         int hour = Integer.parseInt(timeArr[0]);
         hour = hour == 12 ? 0 : hour; 
         int minute = timeArr[1].length() == 4 ? Integer.parseInt(timeArr[1].substring(0, 2)) : Integer.parseInt(timeArr[1]); 
-        if (timeArr.length >= 4 && timeArr[1].substring(2, 4).equalsIgnoreCase("PM")) {
+        if (timeArr[1].length() == 4 && timeArr[1].substring(2, 4).equalsIgnoreCase("PM")) {
             hour += 12;
         }
 
