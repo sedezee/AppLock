@@ -1,4 +1,4 @@
-package src.user_interface;
+package ui;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,17 +13,17 @@ import java.util.Scanner;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import src.DataManager;
-import src.time.Pair;
-import src.time.Program;
-import src.time.Schedule;
+import save.DataManager;
+import time.Pair;
+import time.Program;
+import time.Schedule;
 
 public class UserInterface {
     private DataManager dataManager;
-    UIRegister register; 
+    UIRegister register;
 
     public UserInterface() {
-        register = new UIRegister();  
+        register = new UIRegister();
     }
 
     private Optional<String> selectProgram() {
@@ -38,8 +38,9 @@ public class UserInterface {
         return Optional.of(null);
     }
 
+    @SuppressWarnings("unchecked")
     private Schedule configSchedule(Scanner scanner, int mode) {
-        System.out.println(mode); 
+        System.out.println(mode);
         String[] days = { "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday" };
         Schedule schedule = new Schedule();
         if (mode == 0) {
@@ -61,28 +62,28 @@ public class UserInterface {
                     }
                 }
             }
-        } else { 
+        } else {
             System.out.println("What are your times? Enter NEXT when you're ready to move on.");
             while (true) {
                 List<Pair<LocalTime, LocalTime>> pairs = new ArrayList<>();
-                String resp = scanner.nextLine(); 
+                String resp = scanner.nextLine();
                 if (resp.equalsIgnoreCase("NEXT")) {
                     if (mode == 2) {
                         schedule.setWeekdays(pairs.toArray(new Pair[pairs.size()]));
                     } else if (mode == 3) {
                         schedule.setAllDays(pairs.toArray(new Pair[pairs.size()]));
                     }
-                    break; 
-                } 
+                    break;
+                }
                 try {
-                    LocalTime localTime = Schedule.parseTime(resp); 
-                    LocalTime localTimeTwo = Schedule.parseTime(scanner.nextLine()); 
-                    pairs.add(new Pair(localTime, localTimeTwo));
+                    LocalTime localTime = Schedule.parseTime(resp);
+                    LocalTime localTimeTwo = Schedule.parseTime(scanner.nextLine());
+                    pairs.add(new Pair<>(localTime, localTimeTwo));
                 } catch (DateTimeParseException e) {
-                    System.out.println("There was an error with your time entry. Please re-enter your pair in format HH:MM."); 
+                    System.out.println("There was an error with your time entry. Please re-enter your pair in format HH:MM.");
                 }
             }
-        } 
+        }
         return schedule;
     }
 
@@ -125,77 +126,77 @@ public class UserInterface {
                     try {
                         Program program = new Program(file, configSchedule(scanner, 0));
                         dataManager.addProgram(program);
-                        System.out.println("Program added!"); 
-                        break; 
+                        System.out.println("Program added!");
+                        break;
                     } catch (FileNotFoundException e) {
-                        System.out.println("Sorry, file not found while running AddProgram()"); 
+                        System.out.println("Sorry, file not found while running AddProgram()");
                     }
-                } 
+                }
             } else if (resp.equalsIgnoreCase("SELECT")) {
-                Optional<String> programStr = this.selectProgram(); 
+                Optional<String> programStr = this.selectProgram();
                 try {
-                    File file = new File(programStr.get()); 
-                    Program program = new Program(file, configSchedule(scanner, 0)); 
-                    dataManager.addProgram(program); 
-                    System.out.println("Program added!"); 
-                    break; 
+                    File file = new File(programStr.get());
+                    Program program = new Program(file, configSchedule(scanner, 0));
+                    dataManager.addProgram(program);
+                    System.out.println("Program added!");
+                    break;
                 } catch (NoSuchElementException | FileNotFoundException e) {
-                    System.out.println("Program not found."); 
-                } 
+                    System.out.println("Program not found.");
+                }
             }
         }
     }
 
     private void viewPrograms(Scanner scanner) {
-        List<Program> programs = dataManager.getPrograms(); 
+        List<Program> programs = dataManager.getPrograms();
         if (programs.isEmpty()) {
-            System.out.println("No programs."); 
+            System.out.println("No programs.");
         }
 
         for (Program program : programs) {
-            System.out.println(program); 
+            System.out.println(program);
         }
     }
 
     private void deleteProgram(Scanner scanner) {
-        System.out.println("Which program would you like to delete?"); 
-        dataManager.deleteProgram(scanner.nextLine()); 
+        System.out.println("Which program would you like to delete?");
+        dataManager.deleteProgram(scanner.nextLine());
     }
 
     private void editSchedule(Scanner scanner) {
         while (true) {
-            System.out.println("Would you like to EDIT your schedule or KEEP it the same?"); 
-            String resp = scanner.nextLine(); 
+            System.out.println("Would you like to EDIT your schedule or KEEP it the same?");
+            String resp = scanner.nextLine();
             if (resp.equalsIgnoreCase("EDIT")) {
                 while (true) {
-                    System.out.println("Would you like to change your ENTIRE schedule, your WEEKLY schedule, or your schedule on a PROGRAM to program basis?"); 
-                    resp = scanner.nextLine(); 
+                    System.out.println("Would you like to change your ENTIRE schedule, your WEEKLY schedule, or your schedule on a PROGRAM to program basis?");
+                    resp = scanner.nextLine();
                     if (resp.equalsIgnoreCase("PROGRAM") || resp.equalsIgnoreCase("PROGRAM TO PROGRAM")) {
-                        System.out.println("Which program would you like to change the schedule of?"); 
-                        resp = scanner.nextLine(); 
-                        Program program = dataManager.getProgram(resp); 
-                        Schedule schedule = configSchedule(scanner, 1); 
+                        System.out.println("Which program would you like to change the schedule of?");
+                        resp = scanner.nextLine();
+                        Program program = dataManager.getProgram(resp);
+                        Schedule schedule = configSchedule(scanner, 1);
                         if (program != null) {
-                            program.setSchedule(schedule); 
-                            break; 
+                            program.setSchedule(schedule);
+                            break;
                         } else {
-                            System.out.println("Sorry, that program doesn't exist."); 
+                            System.out.println("Sorry, that program doesn't exist.");
                         }
                     } else {
-                        Schedule schedule; 
+                        Schedule schedule;
                         if (resp.equalsIgnoreCase("ENTIRE")) {
-                            schedule = configSchedule(scanner, 3); 
+                            schedule = configSchedule(scanner, 3);
                         } else if (resp.equalsIgnoreCase("WEEKLY")) {
-                            schedule = configSchedule(scanner, 2); 
+                            schedule = configSchedule(scanner, 2);
                         } else {
-                            System.out.println("Sorry, that isn't an option."); 
-                            continue; 
+                            System.out.println("Sorry, that isn't an option.");
+                            continue;
                         }
 
                         for (Program program : dataManager.getPrograms()) {
-                            program.setSchedule(schedule); 
+                            program.setSchedule(schedule);
                         }
-                        break; 
+                        break;
                     }
                 }
             }
@@ -205,9 +206,9 @@ public class UserInterface {
     private void save(Scanner scanner) {
         if (dataManager.save()) {
             System.out.println("Sucessfully saved.");
-            return; 
+            return;
         }
-        System.out.println("Save unsuccessful."); 
+        System.out.println("Save unsuccessful.");
     }
 
     private void editSettings(Scanner scanner) {
@@ -220,12 +221,12 @@ public class UserInterface {
 
     public void run() {
         register.register(this::addProgram, "add program", "Adds a program to the restricted list.");
-        register.register(this::deleteProgram, "delete program", "Deletes a program from the resitricted list."); 
+        register.register(this::deleteProgram, "delete program", "Deletes a program from the resitricted list.");
         register.register(this::viewPrograms, "view programs", "View the programs you have added.");
-        register.register(this::editSchedule, "edit schedule", "Allows you to edit components of your schedule.");  
-        register.register(this::save, "save", "save your schedule and your settings."); 
-        register.register(this::editSettings, "edit settings", "Edit your settings."); 
-        register.register(this::viewSettings, "view settings", "View your settings."); 
-        register.run(); 
+        register.register(this::editSchedule, "edit schedule", "Allows you to edit components of your schedule.");
+        register.register(this::save, "save", "save your schedule and your settings.");
+        register.register(this::editSettings, "edit settings", "Edit your settings.");
+        register.register(this::viewSettings, "view settings", "View your settings.");
+        register.run();
     }
 }
